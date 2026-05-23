@@ -29,7 +29,7 @@
 //              understand the upper bound of catches.
 
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, existsSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, existsSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { parseClaims, type Claim, claimSlug } from "./claimParser.js";
@@ -125,6 +125,22 @@ export async function runBacktest(opts: BacktestOptions): Promise<BacktestReport
     rmSync(worktreePath, { recursive: true, force: true });
     throw new Error(`Failed to create worktree at ${worktreePath}: ${(e as Error).message}`);
   }
+
+  // Install vitest into the worktree ONCE. Historical checkouts won't
+  // have node_modules (we never run npm install per-commit — too slow,
+  // and dep versions changing would themselves cause spurious fails).
+  // We use a stable vitest binary symlinked from THIS pinnedai install
+  // so the version is consistent across every replay commit.
+  //
+  // Layout we create:
+  //   <worktree>/node_modules/.bin/vitest          (symlink)
+  //   <worktree>/node_modules/vitest               (symlink to our vitest dir)
+  //
+  // Symlinks survive `git checkout` since they're outside the tracked
+  // file set. If a later commit had its own node_modules our symlinks
+  // would conflict, but historical commits in 99% of repos don't
+  // commit node_modules.
+  await installBacktestVitest(worktreePath);
 
   // Pin holding area — generated tests go here. Worktree gets a
   // tests/pinned/ subdir for each replay; we add/remove individually.
@@ -384,8 +400,8 @@ function runVitestAt(
   mkdirSync(target, { recursive: true });
   const targetPath = join(target, "current.test.ts");
   try {
-    const content = require("node:fs").readFileSync(testPath, "utf8");
-    require("node:fs").writeFileSync(targetPath, content);
+    const content = readFileSync(testPath, "utf8");
+    writeFileSync(targetPath, content);
   } catch {
     return "infra-fail";
   }
@@ -404,9 +420,21 @@ function runVitestAt(
     // Try npx with no-install — fast if vitest is in PATH, else infra-fail.
     vitestBin = "npx";
   }
+  // Write a minimal vitest config in the worktree that ONLY includes
+  // our backtest test file. Otherwise the customer's vitest.config.ts
+  // (if present) restricts the include pattern to their src/ tree and
+  // our backtest file gets skipped. We write to a sibling path that
+  // wouldn't conflict with the customer's config.
+  const cfgPath = join(worktree, "tests", "pinned-backtest", "vitest.backtest.config.mjs");
+  writeFileSync(
+    cfgPath,
+    `import { defineConfig } from "vitest/config";
+export default defineConfig({ test: { include: ["tests/pinned-backtest/**/*.test.ts"], root: ${JSON.stringify(worktree)}, passWithNoTests: false } });
+`
+  );
   const args = vitestBin === "npx"
-    ? ["--no-install", "vitest", "run", "--no-coverage", "--reporter=verbose", targetPath]
-    : ["run", "--no-coverage", "--reporter=verbose", targetPath];
+    ? ["--no-install", "vitest", "run", "--no-coverage", "--reporter=verbose", "--config", cfgPath, targetPath]
+    : ["run", "--no-coverage", "--reporter=verbose", "--config", cfgPath, targetPath];
   const r = spawnSync(vitestBin, args, {
     cwd: worktree,
     encoding: "utf8",
@@ -415,6 +443,16 @@ function runVitestAt(
     maxBuffer: 16 * 1024 * 1024,
   });
   const out = (r.stdout ?? "") + (r.stderr ?? "");
+  // PINNEDAI_BACKTEST_DEBUG=1 surfaces every replay's vitest stderr
+  // and exit code so we can diagnose silent infra-fails.
+  if (process.env.PINNEDAI_BACKTEST_DEBUG === "1") {
+    process.stderr.write(
+      `[backtest] ${vitestBin} run @ ${worktree} status=${r.status} sig=${r.signal} bytes=${out.length}\n`
+    );
+    if (out.length > 0 && out.length < 4000) {
+      process.stderr.write(`[backtest stdout/stderr]\n${out}\n`);
+    }
+  }
   // Cleanup
   try { rmSync(target, { recursive: true, force: true }); } catch {}
 
@@ -428,4 +466,64 @@ function runVitestAt(
     /Test Files\s+\d/.test(out) || /\d+ (?:passed|failed|skipped)/.test(out);
   if (!ranTests) return "infra-fail";
   return "fail";
+}
+
+// Install vitest into the historical worktree by symlinking from our
+// own pinnedai install. Faster than `npm install` (no network), and
+// guarantees a known vitest version across every replay commit
+// regardless of what was in the historical lockfile.
+async function installBacktestVitest(worktreePath: string): Promise<void> {
+  const { existsSync, mkdirSync, symlinkSync } = await import("node:fs");
+  const { resolve } = await import("node:path");
+  // Walk up from this script to find pinnedai's own node_modules. The
+  // built CLI lives at apps/cli/dist/cli.js; vitest is in apps/cli/
+  // node_modules. process.argv[1] points at the running cli.js.
+  const cliPath = process.argv[1];
+  const candidates = [
+    resolve(cliPath, "..", "..", "node_modules"),                   // apps/cli/node_modules
+    resolve(cliPath, "..", "..", "..", "..", "node_modules"),       // monorepo root node_modules (pnpm workspace)
+    resolve(cliPath, "..", "..", "..", "..", "..", "node_modules"), // nested workspace
+  ];
+  let ourNodeModules: string | null = null;
+  for (const c of candidates) {
+    if (existsSync(`${c}/vitest`) || existsSync(`${c}/.bin/vitest`)) {
+      ourNodeModules = c;
+      break;
+    }
+  }
+  if (!ourNodeModules) {
+    // No vitest available locally — replays will fall back to npx
+    // and likely fail. Surface but don't throw; the caller has
+    // explicit infra-fail handling.
+    process.stderr.write(
+      "pinned backtest: no local vitest found to symlink — replays may fail to run.\n"
+    );
+    return;
+  }
+  // Make node_modules/.bin/vitest available in the worktree.
+  const wtNm = `${worktreePath}/node_modules`;
+  mkdirSync(`${wtNm}/.bin`, { recursive: true });
+  try {
+    symlinkSync(`${ourNodeModules}/.bin/vitest`, `${wtNm}/.bin/vitest`);
+  } catch {
+    /* already exists or platform doesn't support */
+  }
+  // vitest needs to resolve its sibling packages too. Linking the
+  // whole node_modules is safest — pnpm-style hoisted layouts may
+  // require deep dep resolution.
+  try {
+    symlinkSync(`${ourNodeModules}/vitest`, `${wtNm}/vitest`);
+  } catch {
+    /* ignore */
+  }
+  // Also ensure a package.json exists so vitest's loader doesn't bail.
+  // Use a minimal one if the historical commit doesn't have one (rare
+  // but possible for very early commits).
+  if (!existsSync(`${worktreePath}/package.json`)) {
+    mkdirSync(worktreePath, { recursive: true });
+    writeFileSync(
+      `${worktreePath}/package.json`,
+      JSON.stringify({ name: "backtest-fixture", type: "module" }, null, 2)
+    );
+  }
 }

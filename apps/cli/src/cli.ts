@@ -3833,8 +3833,37 @@ program
       if (!opts.quiet) printBanner();
       assertInsideDir(opts.dir, process.cwd());
 
-      // Phase 1 — scan-diff against the base ref.
-      const changedFiles = readChangedFilesFromGit(opts.base);
+      // Phase 1 — scan-diff against the base ref + working tree.
+      //
+      // Two correctness fixes (audit-3):
+      // 1. The `--help` advertises "falls back to HEAD~1" but the old
+      //    code silently returned [] when `origin/main` was unreachable.
+      //    Implement the fallback chain explicitly.
+      // 2. The guard is called by `pinned_before_done_check` from MCP —
+      //    agents call it BEFORE they commit, so the uncommitted
+      //    working tree is exactly what needs to be scanned. We always
+      //    union working-tree changes into the result so a freshly-added
+      //    /api/admin route doesn't slip past with verdict=PASS.
+      const baseRefCandidates = [
+        opts.base,
+        // Only chain to fallbacks when the user accepted the default.
+        ...(opts.base === "origin/main"
+          ? ["main", "HEAD~1"]
+          : []),
+      ];
+      let changedFiles: ReturnType<typeof readChangedFilesFromGit> = [];
+      for (const ref of baseRefCandidates) {
+        changedFiles = readChangedFilesFromGit(ref);
+        if (changedFiles.length > 0) break;
+      }
+      // Always also include uncommitted work — guard runs at "about to
+      // ship" time, not "about to merge" time.
+      const workingTreeFiles = readChangedFilesFromGit("WORKING_TREE");
+      const byPath = new Map<string, (typeof changedFiles)[number]>();
+      for (const f of changedFiles) byPath.set(f.path, f);
+      // Working-tree state wins on conflict — it's the more recent truth.
+      for (const f of workingTreeFiles) byPath.set(f.path, f);
+      changedFiles = Array.from(byPath.values());
       const body = process.env.GITHUB_PR_BODY ?? "";
       const prBodyClaims = body ? parseClaims(body) : [];
       const existingPins = existsSync(opts.dir)

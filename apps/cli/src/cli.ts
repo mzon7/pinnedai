@@ -1236,11 +1236,28 @@ program
       const vsixCandidates = [
         join(dirname(here), "..", "vscode-extension.vsix"),  // installed npm pkg
         join(dirname(here), "..", "..", "vscode-extension.vsix"),  // monorepo: dist/ → apps/cli/
-        join(dirname(here), "..", "..", "..", "vscode-extension", "pinnedai-vscode-0.1.0.vsix"),  // monorepo source
       ];
       let vsixPath = "";
       for (const cand of vsixCandidates) {
         if (existsSync(cand)) { vsixPath = cand; break; }
+      }
+      // Monorepo source fallback: glob for the newest pinnedai-vscode-*.vsix
+      // so version bumps don't strand this lookup.
+      if (!vsixPath) {
+        try {
+          const extDir = join(dirname(here), "..", "..", "..", "vscode-extension");
+          if (existsSync(extDir)) {
+            const fs = require("node:fs") as typeof import("node:fs");
+            const candidates = fs
+              .readdirSync(extDir)
+              .filter((f) => /^pinnedai-vscode-.*\.vsix$/.test(f))
+              .sort()
+              .reverse();
+            if (candidates[0]) vsixPath = join(extDir, candidates[0]);
+          }
+        } catch {
+          /* fall through */
+        }
       }
       if (vsixPath) {
         const editorCmds = ["code", "cursor", "code-insiders", "codium", "vscodium", "windsurf"];
@@ -5827,9 +5844,22 @@ program
     }
 
     const { spawnSync } = await import("node:child_process");
+    // Exclude `tests/pinned/retired/` from the run. Retired pins have
+    // audit entries and intentionally fail (the original assertion is
+    // preserved so git history is meaningful) — running them would make
+    // `pinned retire` a guaranteed CI break, which contradicts the
+    // documented retire workflow. Customers can override with a custom
+    // vitest config; the default invocation must not punish retirement.
     const result = spawnSync(
       "npx",
-      ["--no-install", "vitest", "run", opts.dir],
+      [
+        "--no-install",
+        "vitest",
+        "run",
+        opts.dir,
+        "--exclude",
+        "**/retired/**",
+      ],
       {
         stdio: ["ignore", "pipe", "pipe"],
         encoding: "utf8",
@@ -7249,13 +7279,17 @@ jobs:
       # fallback in case the customer repo doesn't have it locally.
       - name: Run pinned tests (block on broken guards)
         run: |
+          # Exclude tests/pinned/retired/** — retired pins have audit
+          # entries and intentionally preserve their original assertion
+          # so git history is honest; running them would make every
+          # "pinned retire" a guaranteed CI break.
           if [ -d tests/pinned ] && ls tests/pinned/*.test.ts >/dev/null 2>&1; then
             if [ -f node_modules/.bin/vitest ]; then
-              ./node_modules/.bin/vitest run tests/pinned/ --reporter=verbose --no-coverage
+              ./node_modules/.bin/vitest run tests/pinned/ --exclude '**/retired/**' --reporter=verbose --no-coverage
             else
               # Last-resort: vitest not installed in the repo. Fall back
               # to npx with no-install so this step doesn't silently pass.
-              npx -y -p vitest@^2 vitest run tests/pinned/ --reporter=verbose --no-coverage
+              npx -y -p vitest@^2 vitest run tests/pinned/ --exclude '**/retired/**' --reporter=verbose --no-coverage
             fi
           else
             echo "No pinned tests to run yet — first PR will create them."

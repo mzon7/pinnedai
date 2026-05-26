@@ -483,6 +483,28 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const subArgs = ["scan-diff", "--json"];
       if (base) subArgs.push("--base", base);
       const r = await runPinned(cwd, subArgs);
+
+      // Silent-PASS guard: if the binary couldn't be invoked at all
+      // (npx fallback fails, no local pinned in node_modules, etc.) we
+      // must NOT report "no unprotected surfaces" — that lies to the
+      // agent. Treat empty stdout + non-zero exit as a tool-unavailable
+      // condition and surface it in human_summary so the agent reports
+      // it instead of greenlighting the change.
+      if (r.code !== 0 && !r.stdout.trim()) {
+        return envelopeToContent({
+          status: "info",
+          human_summary:
+            "Pinned scan-diff could not run — the `pinned` CLI is not available in this workspace. Install with `npx pinnedai init` (or `npm i -D pinnedai`) and re-run.",
+          agent_instruction:
+            REPORT_LINE +
+            " Tell the user explicitly that scan-diff did NOT run, so they don't mistake silence for green.",
+          next_step:
+            "Ask the user to install pinnedai before relying on Pinned for this work.",
+          upgrade_prompt: null,
+          raw: (r.stderr || "").slice(0, 1000),
+        });
+      }
+
       let parsed: { suggestions?: Array<{ summary?: string }> } = {};
       try {
         parsed = JSON.parse(r.stdout);

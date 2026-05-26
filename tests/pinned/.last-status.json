@@ -1,23 +1,15 @@
 {
-  "status": "failing",
-  "failingCount": 7,
-  "failingClaimIds": [
-    "v0-1-1-auth-required-api-admin-export-rw7ne7",
-    "v0-1-1-returns-status-api-signup-15x1ys",
-    "v0-1-1-returns-status-api-users-12hl5q",
-    "v0-1-1-returns-status-api-users-um7t93",
-    "baseline-20260525-lockfile-integrity-lockfile-pnpm-lock-yaml-e7a06ea703b2-tb6mqy",
-    "baseline-20260525-secret-not-public-secret-not-public-vite-12jyea",
-    "v0-1-1-cli-output-contains-node-apps-cli-dist-cli-js-version-1o1gxj"
-  ],
+  "status": "green",
+  "failingCount": 0,
+  "failingClaimIds": [],
   "totalPins": 51,
   "safetyNotes": 0,
   "recentlyAddedCount": 1,
   "recentlyAddedAt": "2026-05-26T15:44:05.757Z",
   "suggestedCount": 0,
-  "lastCheckedSha": "9d80d29638d0410edb08ac71b862fe9c60eec7c2",
-  "lastCheckedDirtyHash": "c871f1aec785773b",
-  "updatedAt": "2026-05-26T16:03:37.064Z",
+  "lastCheckedSha": "3df90c7b45fd606c810cfa7f67f3132a718f2f24",
+  "lastCheckedDirtyHash": "909ade964836649a",
+  "updatedAt": "2026-05-26T16:15:32.088Z",
   "lastAutoProtectAt": "2026-05-26T15:35:19.295Z",
   "lastAddNotifiedAt": "2026-05-25T21:15:17.542Z",
   "recentlyAddedSummaries": [
@@ -97,7 +89,10 @@
       "originPr": "v0-1-1"
     }
   ],
-  "checksRun": 2,
-  "verifiedStreak": 0,
-  "skippedCount": 2
+  "checksRun": 4,
+  "verifiedStreak": 1,
+  "skippedCount": 3,
+  "lastVerifiedAt": "2026-05-26T16:14:39.025Z",
+  "lastCoveredAt": "2026-05-26T16:14:39.026Z",
+  "lastCoveredCount": 48
 }

@@ -57,7 +57,7 @@ echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":
 
 ```bash
 # From the monorepo root
-gh repo create mzon7/pinnedai --public --source=. --remote=origin --description "Permanent guardrails for AI-coded apps" --homepage "https://pinnedai.dev"
+gh repo create pinnedai/pinnedai --public --source=. --remote=origin --description "Permanent guardrails for AI-coded apps" --homepage "https://pinnedai.dev"
 git push -u origin master
 ```
 

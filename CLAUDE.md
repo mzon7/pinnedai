@@ -10,7 +10,7 @@
 
 **npm name**: `pinnedai` (binary: `pinned`)
 **Website**: `pinnedai.dev` (not yet registered)
-**GitHub**: `github.com/mzon7/pinnedai` (not yet pushed)
+**GitHub**: `github.com/pinnedai/pinnedai` (not yet pushed)
 **Project dir**: `/Users/michaelzon/dyad-apps/pinnedai/`
 
 **Tagline**: *"Permanent guardrails for AI-coded apps."*
@@ -152,7 +152,7 @@ What's NOT yet done (next concrete tasks):
 - ⏳ GitHub Action integration: also post the generated test content in the PR comment (current workflow posts scan-diff suggestions only; generated-test paste-mode is v0.1.1 polish).
 - ⏳ Domain registration (`pinnedai.dev`) + Vercel deploy of `apps/landing` — week 4.
 - ⏳ Push initial scaffold to `github.com/pinnedai/pinnedai` (new org per [[github-org-decision]] discussion) — week 0 carry-over.
-- ⏳ Marketplace submission for `pinnedai/pinnedai-action` — week 4.
+- ⏳ Marketplace submission for `pinnedai/pinnedai` (root action.yml) — week 4.
 - ⏳ `npm publish pinnedai@0.1.0` (bump from placeholder 0.0.1) — week 5 launch.
 
 ---
@@ -270,7 +270,7 @@ When adding the claim parser:
 Mirrors the Quantasyte CLI approach (user's other project, same patterns):
 
 1. **npm**: publish `pinnedai` unscoped (the scoped form is overkill for the first product).
-2. **GitHub Marketplace**: separate repo `mzon7/pinnedai-action` so the action versioning is independent of the CLI.
+2. **GitHub Marketplace**: separate repo `pinnedai/pinnedai` (root action.yml) so the action versioning is independent of the CLI.
 3. **Landing page**: `pinnedai.dev` (domain to register). Single-page Vite + React. Tagline, demo GIF, install command, 4-tier price card. Pattern matches `quantasyte.com`.
 4. **Launch posts**: Show HN, r/devsecops, r/javascript, dev.to. The demo GIF (open PR → comment → break claim → CI fails) IS the marketing.
 
@@ -295,7 +295,7 @@ Mirrors the Quantasyte CLI approach (user's other project, same patterns):
 
 1. Reserve `pinnedai` on npm (zero-content publish — `npm publish` with a placeholder version so a squatter can't grab the name before week-4 v0.1.0 ships).
 2. Register `pinnedai.dev` domain.
-3. Create GitHub repo `mzon7/pinnedai`, push initial scaffold.
+3. Create GitHub repo `pinnedai/pinnedai`, push initial scaffold.
 4. Build the claim parser (week 1 day 1-3 task).
 5. Build the rate-limit test generator (week 1 day 4-7 task).
 

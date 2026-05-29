@@ -37,7 +37,7 @@ Already in flight via the `LAUNCH_CHECKLIST.md`. Critical artifacts:
 - [x] Landing page with live interactive demo
 - [x] Pricing tier + Stripe payment link button
 - [ ] **Demo GIF** — 45 seconds, the killer asset. PR promise → test committed → future regression caught with back-reference.
-- [ ] **GitHub Marketplace listing** at `pinnedai/pinnedai-action`
+- [ ] **GitHub Marketplace listing** at `pinnedai/pinnedai`
 - [ ] **npm publish** as `pinnedai@0.1.0`
 - [ ] **SEO landing pages** (see list below) — each at `pinnedai.dev/<slug>` with example claim → generated test
 

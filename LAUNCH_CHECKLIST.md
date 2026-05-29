@@ -234,7 +234,7 @@ Save as `pinnedai-demo.gif`. Add it to the README hero and embed on the landing 
 
 ### 13. GitHub Marketplace submission (optional, can do post-launch)
 
-- [ ] Create a separate repo `pinnedai/pinnedai-action` containing just `action.yml` (the composite action wrapping `npx pinnedai`)
+- [ ] Create a separate repo `pinnedai/pinnedai` containing just `action.yml` (the composite action wrapping `npx pinnedai`)
 - [ ] Follow https://docs.github.com/en/actions/creating-actions/publishing-actions-in-github-marketplace
 - [ ] Add icon + description
 - [ ] Tag v1.0.0

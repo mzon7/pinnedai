@@ -4,7 +4,7 @@ Started **2026-05-18**. Target: working npm package + GitHub Action + landing pa
 
 - **npm**: `pinnedai` (binary: `pinned`)
 - **Website**: `pinnedai.dev` (to register)
-- **Repo**: `github.com/mzon7/pinnedai`
+- **Repo**: `github.com/pinnedai/pinnedai`
 
 ---
 
@@ -17,7 +17,7 @@ Started **2026-05-18**. Target: working npm package + GitHub Action + landing pa
 - [x] README + ROADMAP
 - [x] `pnpm install && pnpm build` runs clean
 - [x] Reserve `pinnedai` on npm — **published 0.0.1 as placeholder, name secured**
-- [ ] First commit + push to `mzon7/pinnedai`
+- [ ] First commit + push to `pinnedai/pinnedai`
 - [ ] Register `pinnedai.dev` domain
 
 ## Week 1 — Foundation + Template 1 (rate-limit)
@@ -74,7 +74,7 @@ Started **2026-05-18**. Target: working npm package + GitHub Action + landing pa
 - [ ] Landing page deployed to Vercel at `pinnedai.dev` (domain registered).
 - [ ] Update Free-tier copy on landing: "100 LLM calls/repo/mo via OIDC — no API key needed."
 - [ ] Record demo GIF: open PR with rate-limit claim → Action posts comment → paste test → merge → push regression commit → CI fails with back-reference.
-- [ ] GitHub Marketplace submission for `pinnedai/pinnedai-action` repo.
+- [ ] GitHub Marketplace submission for `pinnedai/pinnedai` repo.
 - [ ] First end-to-end demo on a real toy repo (publicly linkable).
 
 ## Week 5 — Launch

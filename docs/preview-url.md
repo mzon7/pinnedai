@@ -49,7 +49,7 @@ jobs:
           max_timeout: 600
 
       # Run Pinned with the preview URL
-      - uses: pinnedai/pinnedai-action@v1
+      - uses: pinnedai/pinnedai@v0.1.0
         env:
           PREVIEW_URL: ${{ steps.vercel-preview.outputs.url }}
 ```
@@ -65,7 +65,7 @@ Fly doesn't auto-create per-PR previews. Two options:
 ### Option A: Single staging app, point all PRs at it
 
 ```yaml
-- uses: pinnedai/pinnedai-action@v1
+- uses: pinnedai/pinnedai@v0.1.0
   env:
     PREVIEW_URL: https://your-staging-app.fly.dev
 ```
@@ -85,7 +85,7 @@ Use Fly's [GitHub PR preview](https://fly.io/docs/blueprints/review-apps-guide/)
   env:
     FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
-- uses: pinnedai/pinnedai-action@v1
+- uses: pinnedai/pinnedai@v0.1.0
   env:
     PREVIEW_URL: ${{ steps.fly-deploy.outputs.url }}
 ```
@@ -108,7 +108,7 @@ Cloudflare Pages auto-creates preview URLs at `https://<commit-hash>.your-projec
     projectName: your-project
     directory: ./dist
 
-- uses: pinnedai/pinnedai-action@v1
+- uses: pinnedai/pinnedai@v0.1.0
   env:
     PREVIEW_URL: ${{ steps.cf-preview.outputs.url }}
 ```
@@ -122,7 +122,7 @@ Required secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
 Render's pull-request-preview feature ([docs](https://render.com/docs/pull-request-previews)) creates a unique URL for each PR.
 
 ```yaml
-- uses: pinnedai/pinnedai-action@v1
+- uses: pinnedai/pinnedai@v0.1.0
   env:
     # Render's PR preview URL pattern
     PREVIEW_URL: https://your-service-pr-${{ github.event.pull_request.number }}.onrender.com
@@ -145,7 +145,7 @@ Railway's [PR Environments](https://docs.railway.com/guides/pull-request-environ
   env:
     RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
-- uses: pinnedai/pinnedai-action@v1
+- uses: pinnedai/pinnedai@v0.1.0
   env:
     PREVIEW_URL: ${{ steps.railway-url.outputs.url }}
 ```
@@ -180,7 +180,7 @@ When you don't have a hosted preview yet — typical for a brand-new project or 
     TUNNEL_URL=$(grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' tunnel.log | head -1)
     echo "url=$TUNNEL_URL" >> $GITHUB_OUTPUT
 
-- uses: pinnedai/pinnedai-action@v1
+- uses: pinnedai/pinnedai@v0.1.0
   env:
     PREVIEW_URL: ${{ steps.tunnel.outputs.url }}
 ```

@@ -31,3 +31,6 @@ audit/oss-sweep/.clones/
 .pinned/byok.json
 .pinned/lessons.json
 .pinned/cache/
+
+# pulse.sh local snapshot log
+.pulse-log

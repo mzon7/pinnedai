@@ -1,0 +1,36 @@
+name: ❓ Question / help
+description: How do I…? Where do I find…? Is X supposed to work?
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Questions are totally welcome. **Please check the docs first** — most install + integration questions are answered in `docs/integrations/`.
+
+        If you can't find the answer there, ask away. Even "the docs are unclear about X" counts as a useful question.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: What are you trying to do?
+      description: One paragraph describing your goal. Specific tasks beat abstract ones.
+      placeholder: e.g. "I have a Next.js + Stripe app and I want Pinned to guard the webhook signature check on the Stripe handler. Can it?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: What have you already tried?
+      description: Commands you ran, docs you read, things that didn't work.
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Any context that might help?
+      description: Stack, AI tool you use, what your repo looks like, etc.
+    validations:
+      required: false

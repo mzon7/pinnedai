@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Read the docs first
+    url: https://github.com/pinnedai/pinnedai/tree/master/docs/integrations
+    about: Setup guides for Cursor, Windsurf, Claude Code, and the MCP server. Check here before filing — most install questions are answered.
+  - name: 🌐 pinnedai.dev
+    url: https://pinnedai.dev
+    about: Landing page, proof page, how it works.

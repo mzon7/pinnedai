@@ -1,0 +1,53 @@
+name: 💡 Feature request
+description: Suggest a new template, detector, integration, or workflow.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Feature ideas are very welcome. **Concrete proposals beat abstract ones.**
+        If you can describe a real bug Pinned should have caught but didn't, that's the best kind of feature request.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the failure case or workflow gap. Avoid solution-language here — focus on the pain.
+      placeholder: e.g. "My AI coder keeps removing the CSP headers from next.config.js. Pinned doesn't notice because it doesn't have a config-header detector."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What's your proposed approach? (optional)
+      description: How would you imagine Pinned solving this? Skip if you don't know — just describing the problem clearly is enough.
+      placeholder: e.g. "A new template that pins the existence of specific keys in next.config.js's headers() function."
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What have you tried instead?
+      description: Other tools, workarounds, manual checks, etc.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Which part of Pinned?
+      options:
+        - New template / detector (what to guard)
+        - New AI-coder integration (Cursor / Cline / Continue / etc.)
+        - CLI command / flag
+        - MCP server tool
+        - VS Code / Open VSX extension
+        - GitHub Action
+        - Reporting / dashboard
+        - Documentation
+        - Other (describe above)
+    validations:
+      required: true

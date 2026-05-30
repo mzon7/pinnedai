@@ -69,14 +69,27 @@ when new things come up; strike through when done.
 
 ## Drafts (paste-ready when the moment comes)
 
-### awesome-mcp-servers PR entry (use TONIGHT)
+### awesome-mcp-servers PR entry (canonical version — use TONIGHT)
 
-Section: probably under "Tools" or "Developer Experience" — check
-the repo's current structure. Alphabetical placement.
+Section: **Coding Agents** (verified — best fit; similar to
+avansaber/tailtest-cline, runyourempire/4DA, etc.). Alphabetical-ish
+placement; the section is sloppy enough that approximate placement is
+fine.
 
 ```markdown
-- [pinnedai-mcp](https://github.com/pinnedai/pinnedai/tree/master/apps/mcp) — MCP server that lets Claude Desktop / Cursor / Cline call regression-guard tools natively. Exposes `pinned_before_code_change`, `pinned_before_done_check`, `pinned_scan_diff`, `pinned_list_guards`, `pinned_check_pr_description`, and `pinned_suggest_init`. Each response includes a structured `human_summary` + `agent_instruction` so the agent reports guard status in its final answer rather than hiding it. Read-only against the workspace; all state writes go through the user's local `pinned` CLI with consent. Apache 2.0.
+- [pinnedai/pinnedai](https://github.com/pinnedai/pinnedai/tree/master/apps/mcp) 📇 🏠 🍎 🪟 🐧 - Stops your AI from re-introducing bugs, leaking provider keys, or weakening tests — and teaches the agent your repo's specific rules over time. Bug fixes become permanent regression guards; blocked mistakes become repo-specific AI lessons the agent reads before its next edit. Local-first. Apache 2.0.
 ```
+
+**Do NOT add the 🤖🤖🤖 tag to the PR title** — that opt-in is for autonomous bot PRs. You're a human submitter.
+
+**Legend reference** (for the emojis):
+- 📇 TypeScript codebase
+- 🏠 Local service (runs on user's machine; no remote API by default)
+- 🍎 🪟 🐧 macOS / Windows / Linux
+
+**PR title**: `Add pinnedai-mcp to Coding Agents`
+
+**PR body**: see the longer-form draft below (security disclosure goes here, not in the README line).
 
 ### awesome-claude-code form (use 2026-06-03)
 

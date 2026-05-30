@@ -5,7 +5,7 @@ when new things come up; strike through when done.
 
 ## NOW (tonight or this week)
 
-- [~] **Submit `pinnedai-mcp` to `awesome-mcp-servers`** — IN PROGRESS · drafted 2026-05-29 —
+- [x] **Submit `pinnedai-mcp` to `awesome-mcp-servers`** — ✅ SUBMITTED 2026-05-30 — PR #7140: https://github.com/punkpeye/awesome-mcp-servers/pull/7140 —
       https://github.com/punkpeye/awesome-mcp-servers
       No age requirement. PR-based submission. See section template
       below in the "Active drafts" section.
